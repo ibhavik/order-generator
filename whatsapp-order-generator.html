@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Order Confirmation Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: white;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .items-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .item-row {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .item-number {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .remove-btn:hover {
+            background: #ee5a6f;
+        }
+
+        .item-inputs {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .add-item-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .add-item-btn:hover {
+            background: #20ba5a;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .generate-btn, .copy-btn, .whatsapp-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .generate-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .generate-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn {
+            background: #25D366;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #20ba5a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            display: none;
+        }
+
+        .whatsapp-btn.show {
+            display: block;
+        }
+
+        .whatsapp-btn:hover {
+            background: #20ba5a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .copy-btn:disabled, .whatsapp-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .preview.show {
+            display: block;
+        }
+
+        .preview-header {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #ddd;
+        }
+
+        .success-message {
+            background: #25D366;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .item-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .whatsapp-btn.show {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 WhatsApp Order Generator</h1>
+        <p class="subtitle">Tree Nuts B2B Order Confirmation</p>
+
+        <div class="form-group">
+            <label>Buyer Name</label>
+            <input type="text" id="buyerName" placeholder="e.g., Omkar Impex">
+        </div>
+
+        <div class="items-section">
+            <label>Order Items</label>
+            <div id="itemsContainer"></div>
+            <button class="add-item-btn" onclick="addItem()">+ Add Item</button>
+        </div>
+
+        <div class="form-group">
+            <label>Transport</label>
+            <select id="transport">
+                <option value="">Select Transport</option>
+                <option value="Safexpress">Safexpress</option>
+                <option value="VRL">VRL</option>
+                <option value="Nitco Logistics">Nitco Logistics</option>
+                <option value="other">Other (Specify)</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="otherTransportGroup" style="display: none;">
+            <label>Specify Transport</label>
+            <input type="text" id="otherTransport" placeholder="Enter transport name">
+        </div>
+
+        <div class="form-group">
+            <label>Cash Discount</label>
+            <select id="cashDiscount">
+                <option value="">No Cash Discount</option>
+                <option value="1">1% CD</option>
+                <option value="2">2% CD</option>
+                <option value="custom">Custom CD</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="customCDGroup" style="display: none;">
+            <label>Custom Cash Discount %</label>
+            <input type="text" id="customCD" placeholder="e.g., 1.5">
+        </div>
+
+        <div class="form-group">
+            <label>Payment Terms</label>
+            <select id="paymentTerms">
+                <option value="">Select Payment Terms</option>
+                <option value="Advance">Advance</option>
+                <option value="Net 7 days">Net 7 days</option>
+                <option value="Net 15 days">Net 15 days</option>
+                <option value="Net 30 days">Net 30 days</option>
+                <option value="custom">Custom Terms</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="customPaymentGroup" style="display: none;">
+            <label>Custom Payment Terms</label>
+            <input type="text" id="customPayment" placeholder="e.g., Net 10 days">
+        </div>
+
+        <div class="form-group">
+            <label>Your Business Name</label>
+            <select id="businessName">
+                <option value="">Select Business Name</option>
+                <option value="Agro Nut & Food Co">Agro Nut & Food Co</option>
+                <option value="Hansraj Exports">Hansraj Exports</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button class="generate-btn" onclick="generateMessage()">🔄 Generate Message</button>
+            <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()" disabled>📋 Copy to Clipboard</button>
+            <button class="whatsapp-btn" id="whatsappBtn" onclick="shareToWhatsApp()" disabled>💬 Share to WhatsApp</button>
+        </div>
+
+        <div class="success-message" id="successMessage">✅ Copied to clipboard!</div>
+
+        <div class="preview" id="preview">
+            <div class="preview-header">📱 WhatsApp Message Preview:</div>
+            <div class="preview-content" id="previewContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let itemCount = 0;
+        let generatedMessage = '';
+
+        // Add initial item on load
+        window.onload = function() {
+            addItem();
+            
+            // Add event listener for transport dropdown
+            document.getElementById('transport').addEventListener('change', function() {
+                const otherGroup = document.getElementById('otherTransportGroup');
+                if (this.value === 'other') {
+                    otherGroup.style.display = 'block';
+                } else {
+                    otherGroup.style.display = 'none';
+                }
+            });
+
+            // Add event listener for cash discount dropdown
+            document.getElementById('cashDiscount').addEventListener('change', function() {
+                const customCDGroup = document.getElementById('customCDGroup');
+                if (this.value === 'custom') {
+                    customCDGroup.style.display = 'block';
+                } else {
+                    customCDGroup.style.display = 'none';
+                }
+            });
+
+            // Add event listener for payment terms dropdown
+            document.getElementById('paymentTerms').addEventListener('change', function() {
+                const customPaymentGroup = document.getElementById('customPaymentGroup');
+                if (this.value === 'custom') {
+                    customPaymentGroup.style.display = 'block';
+                } else {
+                    customPaymentGroup.style.display = 'none';
+                }
+            });
+        };
+
+        function addItem() {
+            itemCount++;
+            const itemsContainer = document.getElementById('itemsContainer');
+            
+            const itemRow = document.createElement('div');
+            itemRow.className = 'item-row';
+            itemRow.id = `item-${itemCount}`;
+            
+            itemRow.innerHTML = `
+                <div class="item-header">
+                    <span class="item-number">Item ${itemCount}</span>
+                    <button class="remove-btn" onclick="removeItem(${itemCount})">Remove</button>
+                </div>
+                <div class="item-inputs">
+                    <div>
+                        <label style="font-size: 12px; margin-bottom: 5px;">Product Name</label>
+                        <input type="text" id="product-${itemCount}" placeholder="e.g., Blue Pista - 1kg">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; margin-bottom: 5px;">Quantity</label>
+                        <input type="text" id="quantity-${itemCount}" placeholder="e.g., 30 boxes">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; margin-bottom: 5px;">Rate/kg</label>
+                        <input type="text" id="rate-${itemCount}" placeholder="e.g., 1,111">
+                    </div>
+                </div>
+            `;
+            
+            itemsContainer.appendChild(itemRow);
+        }
+
+        function removeItem(id) {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const items = itemsContainer.children;
+            
+            if (items.length > 1) {
+                document.getElementById(`item-${id}`).remove();
+                renumberItems();
+            } else {
+                alert('You must have at least one item!');
+            }
+        }
+
+        function renumberItems() {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const items = itemsContainer.children;
+            
+            for (let i = 0; i < items.length; i++) {
+                const itemNumber = items[i].querySelector('.item-number');
+                if (itemNumber) {
+                    itemNumber.textContent = `Item ${i + 1}`;
+                }
+            }
+        }
+
+        function generateMessage() {
+            const buyerName = document.getElementById('buyerName').value;
+            const transport = document.getElementById('transport').value;
+            const otherTransport = document.getElementById('otherTransport').value;
+            const cashDiscount = document.getElementById('cashDiscount').value;
+            const customCD = document.getElementById('customCD').value;
+            const paymentTerms = document.getElementById('paymentTerms').value;
+            const customPayment = document.getElementById('customPayment').value;
+            const businessName = document.getElementById('businessName').value;
+
+            if (!buyerName) {
+                alert('Please enter buyer name!');
+                return;
+            }
+
+            // Determine transport text
+            let transportText = '';
+            if (transport === 'other' && otherTransport) {
+                transportText = otherTransport;
+            } else if (transport && transport !== 'other') {
+                transportText = transport;
+            }
+
+            // Determine cash discount text
+            let cdText = '';
+            if (cashDiscount === 'custom' && customCD) {
+                cdText = `CD - ${customCD}%`;
+            } else if (cashDiscount && cashDiscount !== 'custom') {
+                cdText = `CD - ${cashDiscount}%`;
+            }
+
+            // Determine payment terms text
+            let paymentText = '';
+            if (paymentTerms === 'custom' && customPayment) {
+                paymentText = customPayment;
+            } else if (paymentTerms && paymentTerms !== 'custom') {
+                paymentText = paymentTerms;
+            }
+
+            // Build transport & terms line
+            let transportTermsLine = '';
+            let parts = [];
+            
+            if (transportText) {
+                parts.push(`Shipment via ${transportText}`);
+            }
+            if (cdText) {
+                parts.push(cdText);
+            }
+            if (paymentText) {
+                parts.push(paymentText);
+            }
+            
+            transportTermsLine = parts.join(' | ');
+
+            // Collect all items
+            const itemsContainer = document.getElementById('itemsContainer');
+            const items = itemsContainer.children;
+            let itemsList = '';
+
+            for (let i = 0; i < items.length; i++) {
+                const itemId = items[i].id.split('-')[1];
+                const product = document.getElementById(`product-${itemId}`).value;
+                const quantity = document.getElementById(`quantity-${itemId}`).value;
+                const rate = document.getElementById(`rate-${itemId}`).value;
+
+                if (product && quantity && rate) {
+                    const itemNumber = getNumberEmoji(i + 1);
+                    itemsList += `\n${itemNumber} ${product}\n   • Quantity: ${quantity}\n   • Rate: ₹${rate}/kg`;
+                    if (i < items.length - 1) {
+                        itemsList += '\n';
+                    }
+                }
+            }
+
+            if (!itemsList) {
+                alert('Please add at least one complete item!');
+                return;
+            }
+
+            // Generate message
+            generatedMessage = `✅ *ORDER CONFIRMED*
+
+${buyerName},
+
+📦 *Order Details:*${itemsList}
+
+🚛 *Transport & Terms:*
+${transportTermsLine || 'To be confirmed'}
+
+Best regards,
+${businessName || '[Your Business Name]'}
+
+Thank you for your order! 🙏`;
+
+            // Show preview
+            document.getElementById('previewContent').textContent = generatedMessage;
+            document.getElementById('preview').classList.add('show');
+            document.getElementById('copyBtn').disabled = false;
+            document.getElementById('whatsappBtn').disabled = false;
+            document.getElementById('whatsappBtn').classList.add('show');
+        }
+
+        function getNumberEmoji(num) {
+            const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+            return emojis[num - 1] || `${num}.`;
+        }
+
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(generatedMessage);
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = generatedMessage;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function shareToWhatsApp() {
+            // Encode the message for URL
+            const encodedMessage = encodeURIComponent(generatedMessage);
+            
+            // WhatsApp URL scheme - works on both mobile and desktop
+            // On mobile it will open WhatsApp app, on desktop it opens web.whatsapp.com
+            const whatsappURL = `https://wa.me/?text=${encodedMessage}`;
+            
+            // Open WhatsApp
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+</body>
+</html>
