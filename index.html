@@ -149,7 +149,7 @@
             margin-top: 30px;
         }
 
-        .generate-btn, .copy-btn, .whatsapp-btn {
+        .generate-btn, .copy-btn {
             flex: 1;
             padding: 15px;
             border: none;
@@ -182,23 +182,7 @@
             box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
         }
 
-        .whatsapp-btn {
-            background: #25D366;
-            color: white;
-            display: none;
-        }
-
-        .whatsapp-btn.show {
-            display: block;
-        }
-
-        .whatsapp-btn:hover {
-            background: #20ba5a;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        .copy-btn:disabled, .whatsapp-btn:disabled {
+        .copy-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
@@ -244,6 +228,7 @@
             text-align: center;
             font-weight: 600;
             display: none;
+            font-size: 14px;
         }
 
         .success-message.show {
@@ -274,10 +259,6 @@
             .button-group {
                 flex-direction: column;
             }
-
-            .whatsapp-btn.show {
-                display: block;
-            }
         }
     </style>
 </head>
@@ -288,7 +269,7 @@
 
         <div class="form-group">
             <label>Buyer Name</label>
-            <input type="text" id="buyerName" placeholder="e.g., ABC Impex">
+            <input type="text" id="buyerName" placeholder="e.g., Omkar Impex">
         </div>
 
         <div class="items-section">
@@ -346,18 +327,13 @@
         </div>
 
         <div class="form-group">
-            <label>Your Business Name</label>
-            <select id="businessName">
-                <option value="">Select Business Name</option>
-                <option value="Agro Nut & Food Co">Agro Nut & Food Co</option>
-                <option value="Hansraj Exports">Hansraj Exports</option>
-            </select>
+            <label>Remarks <span style="color: #999; font-weight: 400;">(optional)</span></label>
+            <textarea id="remarks" rows="2" placeholder="Any additional notes..."></textarea>
         </div>
 
         <div class="button-group">
             <button class="generate-btn" onclick="generateMessage()">🔄 Generate Message</button>
             <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()" disabled>📋 Copy to Clipboard</button>
-            <button class="whatsapp-btn" id="whatsappBtn" onclick="shareToWhatsApp()" disabled>💬 Share to WhatsApp</button>
         </div>
 
         <div class="success-message" id="successMessage">✅ Copied to clipboard!</div>
@@ -471,7 +447,7 @@
             const customCD = document.getElementById('customCD').value;
             const paymentTerms = document.getElementById('paymentTerms').value;
             const customPayment = document.getElementById('customPayment').value;
-            const businessName = document.getElementById('businessName').value;
+            const remarks = document.getElementById('remarks').value.trim();
 
             if (!buyerName) {
                 alert('Please enter buyer name!');
@@ -503,20 +479,11 @@
             }
 
             // Build transport & terms line
-            let transportTermsLine = '';
             let parts = [];
-            
-            if (transportText) {
-                parts.push(`Shipment via ${transportText}`);
-            }
-            if (cdText) {
-                parts.push(cdText);
-            }
-            if (paymentText) {
-                parts.push(paymentText);
-            }
-            
-            transportTermsLine = parts.join(' | ');
+            if (transportText) parts.push(`Shipment via ${transportText}`);
+            if (cdText) parts.push(cdText);
+            if (paymentText) parts.push(paymentText);
+            const transportTermsLine = parts.join(' | ');
 
             // Collect all items
             const itemsContainer = document.getElementById('itemsContainer');
@@ -543,7 +510,7 @@
                 return;
             }
 
-            // Generate message
+            // Build message
             generatedMessage = `✅ *ORDER CONFIRMED*
 
 ${buyerName},
@@ -551,19 +518,18 @@ ${buyerName},
 📦 *Order Details:*${itemsList}
 
 🚛 *Transport & Terms:*
-${transportTermsLine || 'To be confirmed'}
+${transportTermsLine || 'To be confirmed'}`;
 
-Best regards,
-${businessName || '[Your Business Name]'}
+            if (remarks) {
+                generatedMessage += `\n\n📝 *Remarks:*\n${remarks}`;
+            }
 
-Thank you for your order! 🙏`;
+            generatedMessage += `\n\nThank you for your order! 🙏`;
 
             // Show preview
             document.getElementById('previewContent').textContent = generatedMessage;
             document.getElementById('preview').classList.add('show');
             document.getElementById('copyBtn').disabled = false;
-            document.getElementById('whatsappBtn').disabled = false;
-            document.getElementById('whatsappBtn').classList.add('show');
         }
 
         function getNumberEmoji(num) {
@@ -575,6 +541,8 @@ Thank you for your order! 🙏`;
             try {
                 await navigator.clipboard.writeText(generatedMessage);
                 const successMsg = document.getElementById('successMessage');
+                successMsg.textContent = '✅ Copied to clipboard!';
+                successMsg.classList.remove('whatsapp-mode');
                 successMsg.classList.add('show');
                 
                 setTimeout(() => {
@@ -590,24 +558,14 @@ Thank you for your order! 🙏`;
                 document.body.removeChild(textArea);
                 
                 const successMsg = document.getElementById('successMessage');
+                successMsg.textContent = '✅ Copied to clipboard!';
+                successMsg.classList.remove('whatsapp-mode');
                 successMsg.classList.add('show');
                 
                 setTimeout(() => {
                     successMsg.classList.remove('show');
                 }, 3000);
             }
-        }
-
-        function shareToWhatsApp() {
-            // Encode the message for URL
-            const encodedMessage = encodeURIComponent(generatedMessage);
-            
-            // WhatsApp URL scheme - works on both mobile and desktop
-            // On mobile it will open WhatsApp app, on desktop it opens web.whatsapp.com
-            const whatsappURL = `https://wa.me/?text=${encodedMessage}`;
-            
-            // Open WhatsApp
-            window.open(whatsappURL, '_blank');
         }
     </script>
 </body>
