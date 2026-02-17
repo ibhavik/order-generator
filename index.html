@@ -582,27 +582,11 @@ ${transportTermsLine || 'To be confirmed'}`;
         }
 
         async function shareToWhatsApp() {
-            // Copy to clipboard first so message is ready to paste
-            try {
-                await navigator.clipboard.writeText(generatedMessage);
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = generatedMessage;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            }
-
-            const successMsg = document.getElementById('successMessage');
-            successMsg.textContent = '✅ Copied! Select a chat in WhatsApp and paste.';
-            successMsg.classList.add('show');
-            setTimeout(() => { successMsg.classList.remove('show'); }, 4000);
-
-            // Open WhatsApp
-            setTimeout(() => {
-                window.location.href = 'whatsapp://';
-            }, 300);
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(generatedMessage);
+            
+            // wa.me URL with pre-filled message - works on iPhone to open WhatsApp with message ready
+            window.location.href = `https://wa.me/?text=${encodedMessage}`;
         }
     </script>
 </body>
