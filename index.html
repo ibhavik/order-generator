@@ -149,7 +149,7 @@
             margin-top: 30px;
         }
 
-        .generate-btn, .copy-btn {
+        .generate-btn, .copy-btn, .whatsapp-btn {
             flex: 1;
             padding: 15px;
             border: none;
@@ -182,7 +182,18 @@
             box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
         }
 
-        .copy-btn:disabled {
+        .whatsapp-btn {
+            background: #128C7E;
+            color: white;
+        }
+
+        .whatsapp-btn:hover {
+            background: #0f7568;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(18, 140, 126, 0.4);
+        }
+
+        .copy-btn:disabled, .whatsapp-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
@@ -334,6 +345,7 @@
         <div class="button-group">
             <button class="generate-btn" onclick="generateMessage()">🔄 Generate Message</button>
             <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()" disabled>📋 Copy to Clipboard</button>
+            <button class="whatsapp-btn" id="whatsappBtn" onclick="shareToWhatsApp()" disabled>💬 WhatsApp</button>
         </div>
 
         <div class="success-message" id="successMessage">✅ Copied to clipboard!</div>
@@ -530,6 +542,7 @@ ${transportTermsLine || 'To be confirmed'}`;
             document.getElementById('previewContent').textContent = generatedMessage;
             document.getElementById('preview').classList.add('show');
             document.getElementById('copyBtn').disabled = false;
+            document.getElementById('whatsappBtn').disabled = false;
         }
 
         function getNumberEmoji(num) {
@@ -566,6 +579,30 @@ ${transportTermsLine || 'To be confirmed'}`;
                     successMsg.classList.remove('show');
                 }, 3000);
             }
+        }
+
+        async function shareToWhatsApp() {
+            // Copy to clipboard first so message is ready to paste
+            try {
+                await navigator.clipboard.writeText(generatedMessage);
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = generatedMessage;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = '✅ Copied! Select a chat in WhatsApp and paste.';
+            successMsg.classList.add('show');
+            setTimeout(() => { successMsg.classList.remove('show'); }, 4000);
+
+            // Open WhatsApp
+            setTimeout(() => {
+                window.location.href = 'whatsapp://';
+            }, 300);
         }
     </script>
 </body>
