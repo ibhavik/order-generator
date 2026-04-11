@@ -518,7 +518,10 @@
 
                 if (product && quantity && rate) {
                     const itemNumber = getNumberEmoji(i + 1);
-                    itemsList += `\n${itemNumber} ${product}\n   • Quantity: ${quantity}\n   • Rate: ₹${rate}/kg`;
+                    const rateNum = parseFloat(rate.replace(/,/g, ''));
+                    const basicRate = Math.ceil((rateNum / 1.05) * 2) / 2;
+                    const basicRateDisplay = basicRate % 1 === 0 ? basicRate.toFixed(0) : basicRate.toFixed(1);
+                    itemsList += `\n${itemNumber} ${product}\n   • Quantity: ${quantity}\n   • Rate: ₹${rate}/kg [ ${basicRateDisplay} + Tax ]`;
                     if (i < items.length - 1) {
                         itemsList += '\n';
                     }
