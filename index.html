@@ -595,9 +595,15 @@ ${transportTermsLine || 'To be confirmed'}`;
         async function shareToWhatsApp() {
             // Encode message for URL
             const encodedMessage = encodeURIComponent(generatedMessage);
-            
-            // wa.me URL with pre-filled message - works on iPhone to open WhatsApp with message ready
-            window.location.href = `https://wa.me/?text=${encodedMessage}`;
+
+            const isWindows = /Windows/i.test(navigator.userAgent);
+            if (isWindows) {
+                // Go directly to WhatsApp Web on Windows to skip the wa.me redirect that drops emojis
+                window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+            } else {
+                // wa.me opens the WhatsApp app directly on iPhone/Android, works fine on Mac too
+                window.location.href = `https://wa.me/?text=${encodedMessage}`;
+            }
         }
     </script>
 </body>
